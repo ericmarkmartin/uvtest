@@ -1,0 +1,22 @@
+[project]
+name = "deepnets"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Rajah Nutakki", email = "rajah.nutakki@polytechnique.edu" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "netket>=3.14",
+    "netket_pro",
+    "netket_checkpoint",
+    "h5py>=3.7.0",
+]
+
+#[project.scripts]
+#deepnets = "deepnets:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

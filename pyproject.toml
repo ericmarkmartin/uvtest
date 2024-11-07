@@ -1,0 +1,30 @@
+[project]
+name = "omnia"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "ipykernel>=6.29.5",
+    "netket",
+    "netket_pro",
+    "netket_checkpoint",
+    "deepnets",
+]
+
+[tool.uv]
+dev-dependencies = [
+    "networkx>=3.4.2",
+    "pytest-xdist>=3.6.1",
+    "pytest>=8.3.3",
+]
+
+[tool.uv.sources]
+netket = { workspace = true }
+netket_pro = { workspace = true }
+netket_checkpoint = { workspace = true }
+deepnets = { workspace = true }
+
+[tool.uv.workspace]
+members = ["packages/*", "utils/*", "external/netket"]
+exclude = ["utils/jax-rocm-autoinstall"]

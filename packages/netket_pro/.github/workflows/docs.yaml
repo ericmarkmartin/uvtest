@@ -1,0 +1,31 @@
+name: Deploy Sphinx documentation to Pages
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+
+on:
+  push:
+    branches: [main] # branch to trigger deployment
+
+jobs:
+  pages:
+    runs-on: self-hosted
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    permissions:
+      pages: write
+      contents: read
+      id-token: write
+    steps:
+    - uses: actions/checkout@v4
+
+    - id: deployment
+      uses: sphinx-notes/pages@v3
+      with:
+        checkout: false
+
+
+        

@@ -1,0 +1,75 @@
+name: CI
+
+on:
+  pull_request:
+
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: virtualdata-vd.4
+            python-version: "3.12"
+            mpi: ""
+
+          - os: virtualdata-vd.4
+            python-version: "3.11"
+            mpi: "mpich"
+
+    env:
+      MPICH_INTERFACE_HOSTNAME: localhost
+      USE_MPI: ${{ matrix.mpi }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }} on ${{ matrix.os }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Setup MPI
+        uses: mpi4py/setup-mpi@v1
+        if: matrix.mpi != ''
+        with:
+          mpi: ${{ matrix.mpi }}
+
+      - name: Pip install packages
+        run: |
+          pip install uv
+          uv pip install --system 'jax[cpu]' git+https://github.com/netket/netket
+          uv pip install --system -e '.[dev]'
+          if [ -z "${{ matrix.mpi }}" ]; then
+            echo "No MPI"
+            uv pip install --system pytest-xdist
+          else
+            uv pip install --system mpi4jax
+          fi
+
+      - name: Run tests
+        if: ${{ matrix.mpi == '' }} 
+        run: |
+          export NETKET_EXPERIMENTAL=1
+          pytest -n 2 --cov=netket_pro --cov-append --clear-cache-every 40 test
+
+      - name: Run MPI tests
+        if: matrix.mpi != ''
+        run: |
+          mpirun -host localhost:2 -np 2 coverage run -m pytest --clear-cache-every 40 test
+          coverage combine --append
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}

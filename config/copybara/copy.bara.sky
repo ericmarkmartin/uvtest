@@ -1,0 +1,68 @@
+sot_url = "ssh://git@github.com/NeuralQXLab/omnia.git"
+old_repo_url = "ssh://git@github.com/NeuralQXLab/netket_pro.git"
+
+bot_author = "Quantum AI Lab Bot <quantumailabx@gmail.com>"
+
+# This workflow pushes changes from Omnia to NetKet_pro
+core.workflow(
+    name = "default",
+    # name = "push_to_nkpro",
+    origin = git.origin(
+        url = sot_url,
+        ref = "main",
+    ),
+    destination = git.destination(
+        url = old_repo_url,
+        fetch = "main",
+        push = "main",
+    ),
+
+    origin_files = glob(["packages/netket_pro/netket_pro/**",
+                         "packages/netket_pro/test/**",
+                         "packages/netket_checkpoint/netket_checkpoint/**",
+                         "packages/deepnets/deepnets/**"]
+                         ),
+    destination_files = glob(["netket_pro/**",
+                              "test/**",
+                              "netket_checkpoint/**",
+                              "deepnets/**"], 
+                              exclude = ["**/_version.py"]),
+    authoring = authoring.pass_thru(bot_author),
+    transformations = [
+        core.move("packages/netket_pro/netket_pro", "netket_pro"),
+        core.move("packages/netket_checkpoint/netket_checkpoint", "netket_checkpoint"),
+        core.move("packages/deepnets/deepnets", "deepnets"),
+        core.move("packages/netket_pro/test", "test"),
+    ],
+)
+
+
+core.workflow(
+    name = "pull_from_nkpro",
+    origin = git.origin(
+        url = old_repo_url,
+        ref = "main",
+    ),
+    destination = git.destination(
+        url = sot_url,
+        fetch = "main",
+        push = "main",
+    ),
+    mode="ITERATIVE",
+    destination_files = glob(["external/netket/**"], 
+                            exclude = ["**/_version.py"]
+                        ),
+    authoring = authoring.pass_thru(bot_author),
+    origin_files = glob(["netket_pro/**",
+                         "test/**",
+                         "netket_checkpoint/**",
+                         "deepnets/**"]
+                         ),
+    transformations = [
+        core.move("netket_pro", "packages/netket_pro/netket_pro"),
+        core.move("netket_checkpoint", "packages/netket_checkpoint/netket_checkpoint", ),
+        core.move("deepnets", "packages/deepnets/deepnets"),
+        core.move("test", "packages/netket_pro/test"),
+    ],
+
+)
