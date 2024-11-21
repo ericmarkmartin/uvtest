@@ -27,7 +27,8 @@ classifiers = [
     "Operating System :: Unix",
     "Topic :: Scientific/Engineering :: Physics",
 ]
-dynamic = ["version"]
+#dynamic = ["version"]
+version="0.1"
 
 requires-python = ">=3.10"
 dependencies = [
@@ -92,10 +93,6 @@ docs = [
 
 [tool.hatch.build]
 include = ["netket*"]
-
-[tool.hatch.version]
-path = "netket/_version.py"
-pattern = "version = '(?P<version>[^']+)'"
 
 
 [tool.uv]

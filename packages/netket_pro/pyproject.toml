@@ -14,8 +14,8 @@ dependencies = [
     "orbax-checkpoint>=0.6.4",
     "sparse>=0.15",
 ]
-dynamic = ["version"]
-
+#dynamic = ["version"]
+version = "0.1"
 
 [project.optional-dependencies]
 dev = [
