@@ -1,5 +1,5 @@
 [build-system]
-requires = ["hatchling>=1.8.0", "hatch-vcs"]
+requires = ["hatchling>=1.8.0"]
 build-backend = "hatchling.build"
 
 [project]
@@ -49,10 +49,6 @@ extras = [
 
 [tool.hatch.build]
 include = ["netket_pro*"]
-
-[tool.hatch.version]
-path = "netket_pro/_version.py"
-pattern = "version = '(?P<version>[^']+)'"
 
 [tool.uv.sources]
 neural-tangents = {git = "https://github.com/google/neural-tangents"}
